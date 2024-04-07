@@ -10,8 +10,8 @@ $app->addBodyParsingMiddleware();
 function getConnection() {
     $dbhost = "localhost";
     $dbname = "seminariophp";
-    $dbuser = "root";
-    $dbpass = "root";
+    $dbuser = "seminariophp";
+    $dbpass = "rseminariophp";
     $connection = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpass);
     $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     return $connection;
