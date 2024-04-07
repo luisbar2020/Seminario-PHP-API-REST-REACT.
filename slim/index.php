@@ -41,7 +41,7 @@ function getConnection() {
 $app->get('/tipos_propiedad/listar', function(Request $request, Response $response) {
     $connection = getConnection(); // Obtiene la base de datos 
     try {
-        $query = $connection->query('SELECT nombre FROM tipo_propiedades');
+        $query = $connection->query('SELECT nombre FROM inquilinos');
         $tipos = $query->fetchAll(PDO::FETCH_ASSOC);
 
         $payload = json_encode([
