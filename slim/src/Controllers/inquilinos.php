@@ -48,10 +48,8 @@ class InquilinosController {
                 // funcion que devulve y muestra la respuesta 
                 return responseWrite($response, $payload);
             } else {
-                $payload = json_encode([
-                    'status' => 'error',
-                    'message' => 'No se encontró ningún inquilino con el ID proporcionado.'
-                ]);
+                $status='Error'; $mensaje='No se encontró ningún inquilino con el ID proporcionado.';
+                $payload = codeResponseGeneric($status,$mensaje,400);
                 // Devolver y mostrar la respuesta con el error
                 return responseWrite($response, $payload);
             }
@@ -79,14 +77,12 @@ class InquilinosController {
              if($tipos) {
                  $payload = codeResponseOk($tipos);
                 // funcion que devulve y muestra la respuesta 
-                return responseWrite($response, $payload, 200);
+                return responseWrite($response,$payload);
             } else {
-                $payload = json_encode([
-                    'status' => 'error',
-                    'message' => 'No se encontró ninguna reserva con el ID proporcionado.'
-                ]);
+                $status='Error'; $mensaje='No se encontró ninguna reserva con el ID proporcionado.';
+                $payload = codeResponseGeneric($status,$mensaje,400);
                 // Devolver y mostrar la respuesta con el error
-                return responseWrite($response, $payload, 400);
+                return responseWrite($response,$payload);
             }
          } catch (\PDOException $e) {
                 // En caso de error, prepara una respuesta de error JSON
@@ -111,18 +107,13 @@ class InquilinosController {
              $filas_delete= $query->rowCount();
              // Preparamos la respuesta json 
              if($filas_delete>0) {
-                 $payload = json_encode([
-                    'status' => 'success',
-                    'code: ' => 200,
-                    'message' => 'INQUILINO BORRADO EXITOSAMENTE'
-                ]);
+                $status='Success'; $mensaje='INQUILINO BORRADO EXITOSAMENTE';
+                 $payload = codeResponseGeneric($status,$mensaje,200);
                 // funcion que devulve y muestra la respuesta 
                 return responseWrite($response, $payload);
             } else {
-                $payload = json_encode([
-                    'status' => 'error',
-                    'message' => 'No se encontró ninguna inquilino con el ID proporcionado.'
-                ]);
+                $status='Error'; $mensaje='No se encontró ninguna inquilino con el ID proporcionado.';
+                $payload = codeResponseGeneric($status,$mensaje,400);
                 // Devolver y mostrar la respuesta con el error
                 return responseWrite($response, $payload);
             }
