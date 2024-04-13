@@ -35,6 +35,7 @@ $app->get('/',function(Request $request,Response $response,$args){
 
 
 $app->get('/tipos_propiedad', TipoPropiedadesController::class. ':listar');
+$app->post('/tipos_propiedad',TipoPropiedadesController::class. ':crearTipoPropiedad');
 $app->delete('/tipos_propiedad/{id}',TipoPropiedadesController::class . ':eliminarTipoPropiedad');
 $app->get('/inquilinos/listar', InquilinosController::class. ':listar');
 $app->get('/inquilinos/listar/{id}', InquilinosController::class .':listarPorId');
