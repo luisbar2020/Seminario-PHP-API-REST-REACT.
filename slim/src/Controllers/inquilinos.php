@@ -5,9 +5,9 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
 require_once __DIR__ . '/../../database.php';
 
-class inquilinos {
+class InquilinosController {
     
-    // GET 
+    // GET /inquilinos
     public function listar (Request $request, Response $response) {
        
         // Obtiene la conexión a la base de datos
@@ -30,6 +30,7 @@ class inquilinos {
          }
      
     }
+    // GET INQUILINOS/{ID}
     public function listarPorId (Request $request, Response $response, $args) {
        
         // Obtiene la conexión a la base de datos
@@ -62,6 +63,7 @@ class inquilinos {
          }
      
     }
+     // GET inquilinos/{idInquilino}/reservas
     public function reservaPorId (Request $request, Response $response, $args) {
        
         // Obtiene la conexión a la base de datos
@@ -77,14 +79,14 @@ class inquilinos {
              if($tipos) {
                  $payload = codeResponseOk($tipos);
                 // funcion que devulve y muestra la respuesta 
-                return responseWrite($response, $payload);
+                return responseWrite($response, $payload, 200);
             } else {
                 $payload = json_encode([
                     'status' => 'error',
                     'message' => 'No se encontró ninguna reserva con el ID proporcionado.'
                 ]);
                 // Devolver y mostrar la respuesta con el error
-                return responseWrite($response, $payload);
+                return responseWrite($response, $payload, 400);
             }
          } catch (\PDOException $e) {
                 // En caso de error, prepara una respuesta de error JSON
@@ -94,6 +96,7 @@ class inquilinos {
          }
      
     }
+    // DELETE inquilinos/{id}
     public function eliminarPorId (Request $request, Response $response, $args) {
        
         // Obtiene la conexión a la base de datos
@@ -110,6 +113,7 @@ class inquilinos {
              if($filas_delete>0) {
                  $payload = json_encode([
                     'status' => 'success',
+                    'code: ' => 200,
                     'message' => 'INQUILINO BORRADO EXITOSAMENTE'
                 ]);
                 // funcion que devulve y muestra la respuesta 

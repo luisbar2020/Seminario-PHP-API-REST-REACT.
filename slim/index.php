@@ -3,12 +3,12 @@
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
-use App\Controllers\tipoPropiedades;
-use App\Controllers\inquilinos;
+use App\Controllers\TipoPropiedadesController;
+use App\Controllers\InquilinosController;
 
 
-require_once __DIR__ . '/src/Controllers/tipoPropiedades.php';
-require_once __DIR__ . '/src/Controllers/inquilinos.php';
+require_once __DIR__ . '/src/Controllers/TipoPropiedades.php';
+require_once __DIR__ . '/src/Controllers/Inquilinos.php';
 require __DIR__ . '/vendor/autoload.php';
 
 $app = AppFactory::create();
@@ -34,11 +34,12 @@ $app->get('/',function(Request $request,Response $response,$args){
 
 
 
-$app->get('/tipos_propiedad/listar', tipoPropiedades::class. ':listar');
-$app->get('/inquilinos/listar', inquilinos::class. ':listar');
-$app->get('/inquilinos/listar/{id}', inquilinos::class .':listarPorId');
-$app->get('/inquilinos/{id}/reservas', inquilinos::class. ':reservaPorId');
-$app->delete('/inquilinos/eliminar/{id}', inquilinos::class. ':eliminarPorId');
+$app->get('/tipos_propiedad', TipoPropiedadesController::class. ':listar');
+$app->delete('/tipos_propiedad/{id}',TipoPropiedadesController::class . ':eliminarTipoPropiedad');
+$app->get('/inquilinos/listar', InquilinosController::class. ':listar');
+$app->get('/inquilinos/listar/{id}', InquilinosController::class .':listarPorId');
+$app->get('/inquilinos/{id}/reservas', InquilinosController::class. ':reservaPorId');
+$app->delete('/inquilinos/eliminar/{id}', InquilinosController::class. ':eliminarPorId');
 
 
 

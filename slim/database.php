@@ -19,6 +19,14 @@ function codeResponseOk ($tipos) {
         'datos:' => $tipos
     ]);
 }
+// funcion generica
+function codeResponseGeneric ($status,$mensaje, $code) {
+    return  json_encode([
+        'Status: '=> $status,
+        'mensaje: ' => $mensaje,
+        'code: ' => $code
+    ]);
+}
 // function para enviar respuesta Error
 function codeResponseBad() {
     return  json_encode([
@@ -30,6 +38,6 @@ function codeResponseBad() {
 // function para mostrar los errores.
 function responseWrite(Response $response , $payload) {
     $response -> getBody()->write($payload);
-    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    return $response->withHeader('Content-Type', 'application/json');
 }
 ?>
