@@ -54,7 +54,8 @@ $app->delete('/inquilinos/eliminar/{id}', InquilinosController::class. ':elimina
 // Localidades
 $app->get ('/localidades', LocalidadesController::class . ':listar');
 $app->put ('/localidades/{id}', LocalidadesController::class . ':editarLocalidad');
-
+$app->delete ('/localidades/{id}', LocalidadesController::class . ':eliminarLocalidad');
+$app->post ('/localidades', LocalidadesController::class . ':agregarLocalidad');
 
 
 
