@@ -12,6 +12,7 @@ require_once __DIR__ . '/src/Controllers/Inquilinos.php';
 require __DIR__ . '/vendor/autoload.php';
 
 $app = AppFactory::create();
+$app->addBodyParsingMiddleware();
 $app->addRoutingMiddleware();
 $app->addErrorMiddleware(true, true, true);
 $app->add( function ($request, $handler) {
@@ -24,7 +25,8 @@ $app->add( function ($request, $handler) {
     ;
 });
 
-// ACÁ VAN LOS ENDPOINTS
+// ACÁ VAN LOS ENDPOINTS 
+
 
 
 $app->get('/',function(Request $request,Response $response,$args){
@@ -33,10 +35,17 @@ $app->get('/',function(Request $request,Response $response,$args){
 });
 
 
+// TIPOS PROPIEDAD
 
 $app->get('/tipos_propiedad', TipoPropiedadesController::class. ':listar');
 $app->post('/tipos_propiedad',TipoPropiedadesController::class. ':crearTipoPropiedad');
+$app->put ('/tipos_propiedad/{id}',TipoPropiedadesController::class. ':editarTipoPropiedad');
 $app->delete('/tipos_propiedad/{id}',TipoPropiedadesController::class . ':eliminarTipoPropiedad');
+
+
+// Inquilinos
+$app->post('/inquilinos', InquilinosController::class . ':crearInquilino');
+$app->put ('/inquilinos/{id}', InquilinosController::class. ':editarInquilino');
 $app->get('/inquilinos/listar', InquilinosController::class. ':listar');
 $app->get('/inquilinos/listar/{id}', InquilinosController::class .':listarPorId');
 $app->get('/inquilinos/{id}/reservas', InquilinosController::class. ':reservaPorId');

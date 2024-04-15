@@ -3,6 +3,7 @@ namespace App\Controllers;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
+
 require_once __DIR__ . '/../../database.php';
 
 class TipoPropiedadesController {
@@ -59,10 +60,62 @@ class TipoPropiedadesController {
         } catch (\PDOException $e) {
             $payload=codeResponseBad();
             return responseWrite($response,$payload);
-
         }
-
     }
+ 
+
+    // PUT /tipos_propiedad/{id}
+    public function editarTipoPropiedad(Request $request, Response $response, $args) {
+        $connection = getConnection();
+        try {
+            $id = $args['id']; // Obtener el ID del tipo de propiedad de los argumentos de la URL
+            // Verificar si el ID es numérico
+            if (!is_numeric($id)) {
+                $status = 'Error';
+                $mensaje = 'ID NO VALIDO';
+                $payload = codeResponseGeneric($status, $mensaje, 400);
+                return responseWrite($response, $payload);
+            } else {
+                $data = $request->getParsedBody();  var_dump($data);
+                // Verificar si el campo 'nombre' está presente y no está vacío
+                if (isset($data['nombre']) && strlen($data['nombre']) ) {
+                    $nombre = $data['nombre'];            
+                    // Verificar si ya existe un tipo de propiedad con el nuevo nombre
+                    $query = $connection->prepare("SELECT nombre FROM tipo_propiedades WHERE nombre = :nombre LIMIT 1");
+                    $query->bindParam(':nombre', $nombre, \PDO::PARAM_STR);
+                    $query->execute();
+
+                    if ($query->rowCount() > 0) {
+                        $status = 'Error';
+                        $mensaje = 'Ya existe un tipo de propiedad con el nuevo nombre';
+                        $payload = codeResponseGeneric($status, $mensaje, 400);
+                        return responseWrite($response, $payload);
+                    } else {
+                        // Actualizar el nombre del tipo de propiedad en la base de datos
+                        $query = $connection->prepare('UPDATE tipo_propiedades SET nombre = :nombre WHERE id = :id');
+                        $query->bindValue(':nombre', $nombre, \PDO::PARAM_STR);
+                        $query->bindValue(':id', $id, \PDO::PARAM_INT);
+                        $query->execute();
+
+                        $status = 'Success';
+                        $mensaje = 'Nombre del tipo de propiedad actualizado exitosamente';
+                        $payload = codeResponseGeneric($status, $mensaje, 200);
+                        return responseWrite($response, $payload);
+                    }
+                } else {
+                    // Si el campo 'nombre' no está presente o está vacío
+                    $status = 'Error';
+                    $mensaje = 'El campo nombre es requerido';
+                    $payload = codeResponseGeneric($status, $mensaje, 400);
+                    return responseWrite($response, $payload);
+                }
+            }
+        } catch (\PDOException $e) {
+            // Manejar excepciones de base de datos
+            $payload = codeResponseBad();
+            return responseWrite($response, $payload);
+        }
+    }   
     // DELETE /tipos_propiedad/{id}
     public function eliminarTipoPropiedad (Request $request, Response $response, $args) {
         $connection= getConnection();

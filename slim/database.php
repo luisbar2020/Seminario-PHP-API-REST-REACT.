@@ -31,7 +31,7 @@ function codeResponseGeneric ($status,$mensaje, $code) {
 function codeResponseBad() {
     return  json_encode([
         'status' => 'Error', 
-        'code' => 400
+        'code' => 404
     ]);
     
 }
