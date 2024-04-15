@@ -1,12 +1,12 @@
 <?php
-
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
 use App\Controllers\TipoPropiedadesController;
 use App\Controllers\InquilinosController;
+use App\Controllers\LocalidadesController;
 
-
+require_once __DIR__ . '/src/Controllers/Localidades.php';
 require_once __DIR__ . '/src/Controllers/TipoPropiedades.php';
 require_once __DIR__ . '/src/Controllers/Inquilinos.php';
 require __DIR__ . '/vendor/autoload.php';
@@ -26,7 +26,6 @@ $app->add( function ($request, $handler) {
 });
 
 // ACÁ VAN LOS ENDPOINTS 
-
 
 
 $app->get('/',function(Request $request,Response $response,$args){
@@ -52,6 +51,9 @@ $app->get('/inquilinos/{id}/reservas', InquilinosController::class. ':reservaPor
 $app->delete('/inquilinos/eliminar/{id}', InquilinosController::class. ':eliminarPorId');
 
 
+// Localidades
+$app->get ('/localidades', LocalidadesController::class . ':listar');
+$app->put ('/localidades/{id}', LocalidadesController::class . ':editarLocalidad');
 
 
 
@@ -66,39 +68,6 @@ $app->delete('/inquilinos/eliminar/{id}', InquilinosController::class. ':elimina
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-$app->delete('/tipos', function(Request $request, Response $response , $args ) {
-    $connection= getConnection(); //conexion a la DB 
-    
-    try {
-        $query = $connection->prepare("DELETE FROM tipo_propiedades WHERE id = :id");
-        $query->execute(['id' => $id]);
-
-        $payload = json_encode([
-            'status' => 'success',
-            'code' => 200
-        ]);
-
-        $response->getBody()->write($payload);
-        return $response->withHeader('Content-Type', 'application/json');
-    } catch (PDOException $e) {
-        $payload = json_encode([
-            'status' => 'error',
-            'code' => 400
-        ]);
-        $response->getBody()->write($payload);
-        return $response->withHeader('Content-Type', 'application/json');
-    }
-}); 
+ 
 
 $app->run(); 
