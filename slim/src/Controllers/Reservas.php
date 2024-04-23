@@ -157,7 +157,7 @@ class ReservasController {
         }
         try {
             $connection=getConnection();
-            $query= $connection ->query("SELECT * FROM reservas WHERE id=$id LIMIT 1");
+            $query= $connection ->query("SELECT id,fecha_desde FROM reservas WHERE id=$id LIMIT 1");
             if($query->rowCount()>0){
                 $reserva= $query->fetch(\PDO::FETCH_ASSOC);
                 $fecha_incio= $reserva['fecha_desde']; 
