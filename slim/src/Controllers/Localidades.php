@@ -42,7 +42,6 @@ class LocalidadesController {
             $data=$request->getParsedBody();
             if(isset($data['nombre'])) {
                 $localidad=$data['nombre'];
-                var_dump($localidad);
                 $query = $connection->prepare("SELECT nombre FROM localidades WHERE nombre = :localidad");
                 $query->bindValue(':localidad', $localidad,);
                 $query->execute();
@@ -51,7 +50,6 @@ class LocalidadesController {
                     $payload=codeResponseGeneric($status,$mensaje,400);
                     return responseWrite($response,$payload);
                 }
-                var_dump($localidad);
                 $query=$connection->prepare("UPDATE localidades set nombre=:localidad WHERE id=$id");
                 $query->bindValue(':localidad',$localidad);
                 $query->execute();

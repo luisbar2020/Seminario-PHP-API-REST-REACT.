@@ -28,8 +28,14 @@ class InquilinosController {
                             return responseWrite($response,$payload);
                         } else {
                             $query=$connection->prepare('INSERT INTO inquilinos (id,apellido,nombre,documento,email,activo) VALUES (:id,:apellido,:nombre,:documento,:email,:activo)');
-                            $query->bindValue(':id',$datos['id']); $query->bindValue(':apellido',$datos['apellido']); $query->bindValue(':nombre',$datos['nombre']); $query->bindValue(':documento',$datos['documento']); $query->bindValue(':email',$datos['email']); $query->bindValue(':activo',$datos['activo']);
-                            $query->execute();
+                            $elementos=[':id'=> $datos['id'],
+                                        ':apellido'=> $datos['apellido'],
+                                        ':nombre'=>$datos['nombre'],
+                                        ':documento'=>$datos['documento'],
+                                        ':email'=>$datos['email'],
+                                        ':activo'=>$datos['activo']
+                            ];
+                            $query->execute($elementos);
                             $status='Success'; $mensaje='Inquilino agregado exitosamente'; $payload=codeResponseGeneric($status,$mensaje,200);
                             return responseWrite($response,$payload);
                         }
@@ -78,8 +84,7 @@ class InquilinosController {
                 if($query->rowCount()>0){
                     $status='Error'; $mensaje='El documento proporcionado ya se encuentra en uso'; $payload=codeResponseGeneric($status,$mensaje,400);
                     return responseWrite($response,$payload);
-                }
-                
+                } 
                 $query=$connection->prepare("UPDATE inquilinos SET
                       id= :id,
                       apellido= :apellido,
@@ -89,8 +94,14 @@ class InquilinosController {
                       activo= :activo
                 WHERE id=:id 
                 ");
-                 $query->bindValue(':id',$datos['id']); $query->bindValue(':apellido',$datos['apellido']); $query->bindValue(':nombre',$datos['nombre']); $query->bindValue(':documento',$datos['documento']); $query->bindValue(':email',$datos['email']); $query->bindValue(':activo',$datos['activo']);
-                 $query->execute();
+                $elementos=[':id'=> $datos['id'],
+                ':apellido'=> $datos['apellido'],
+                ':nombre'=>$datos['nombre'],
+                ':documento'=>$datos['documento'],
+                ':email'=>$datos['email'],
+                ':activo'=>$datos['activo']
+                ];
+                 $query->execute($elementos);
                  $status='SUCCESS'; $mensaje='Inquilino editado exitosamente'; 
                  $payload=codeResponseGeneric($status,$mensaje,200);
                  return responseWrite($response,$payload);
