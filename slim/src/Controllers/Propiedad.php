@@ -162,7 +162,7 @@ class PropiedadesController{
     public function editarPropiedad(Request $request, Response $response, $args) {
         $connection = getConnection();
         $id_url = $args['id']; 
-    
+        $data = $request->getParsedBody();
         // Validar ID numérico
         if(!is_numeric($id_url)) {
             $status = 'Error'; 
@@ -172,6 +172,7 @@ class PropiedadesController{
         }
     
         try {
+            
             // Verificar si la propiedad existe
             $query = $connection->prepare("SELECT id FROM propiedades WHERE id=:id LIMIT 1");
             $query->bindParam(':id', $id_url, \PDO::PARAM_INT);
@@ -182,29 +183,30 @@ class PropiedadesController{
                 $payload = codeResponseGeneric($status, $mensaje, 404);
                 return responseWrite($response, $payload);
             }
-    
-            // Obtener datos de la solicitud
-            $data = $request->getParsedBody();
+
     
             // Validar que los campos requeridos no esten vacios.
-            $requiredFields = ['domicilio', 'localidad_id',  'cantidad_huespedes', 'fecha_inicio_disponibilidad', 'cantidad_dias', 'disponible', 'valor_noche', 'moneda_id', 'tipo_propiedad_id'];
+            $requiredFields = ['domicilio', 'localidad_id',  'cantidad_huespedes', 'fecha_inicio_disponibilidad', 'cantidad_dias', 'disponible', 'valor_noche',  'tipo_propiedad_id'];
             $payload=faltanDatos($requiredFields,$data);
             if (isset($payload)) {
                 return responseWrite($response,$payload);
             }
-    
-            // Verificar si la propiedad ya existe en la base de datos. ¿Validio con domicilio?
-            $propiedad = $data['domicilio'];
-            $query = $connection->prepare("SELECT domicilio FROM propiedades WHERE domicilio = :propiedad");
-            $query->bindParam(':propiedad', $propiedad, \PDO::PARAM_STR);
-            $query->execute();
-            if($query->rowCount() > 0) {
-                $status = 'Error'; 
-                $mensaje = 'La propiedad ya se encuentra en la base de datos'; 
+            $campos = [
+                'localidad_id' => 'localidades',
+                'tipo_propiedad_id' => 'tipo_propiedades'
+            ];
+            $errores = [];
+            foreach ($campos as $campo => $tabla) {
+                if (!$this->existeID($data[$campo], $tabla)) {
+                    $errores[] = "No existe el ID $campo";
+                }
+            }
+            if (!empty($errores)) {
+                $status = 'Error';
+                $mensaje = implode(", ", $errores);
                 $payload = codeResponseGeneric($status, $mensaje, 400);
                 return responseWrite($response, $payload);
             }
-    
             // Actualizar la propiedad
             $query = $connection->prepare("UPDATE propiedades SET
              (domicilio=:domicilio,
