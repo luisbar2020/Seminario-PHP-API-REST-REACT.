@@ -73,7 +73,14 @@ class ReservasController {
             return responseWrite($response, $payload);
         }
         $valor_por_noche = $this->obtenerValorPropiedadPorNoche($data['propiedad_id']);
+
+        if(empty($valor_por_noche)) {
+            $status='Error';$mensaje="Error en la variable valor por noche.";
+            $payload=codeResponseGeneric($status,$mensaje,400);
+            return responseWrite($response,$payload);
+        }
         $valor_total = $valor_por_noche * $data['cantidad_noches'];
+        var_dump($valor_total);
         try {
             $sql = "INSERT INTO reservas (propiedad_id, inquilino_id, fecha_desde, cantidad_noches, valor_total) 
                     VALUES (:propiedad_id, :inquilino_id, :fecha_desde, :cantidad_noches, :valor_total)";
