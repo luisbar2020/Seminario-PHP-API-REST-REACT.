@@ -69,6 +69,12 @@ class TipoPropiedadesController {
         }
         try {
             $connection = getConnection();
+            $query=$connection->query("SELECT id from tipo_propiedades WHERE id=$id");
+            if($query->rowCount()==0){
+                $status="Error"; $mensaje='No existe el ID'; 
+                $payload=codeResponseGeneric($status,$mensaje,400);
+                return responseWrite($response,$payload);
+            }
             $data = $request->getParsedBody();  
             // Verificar si el campo 'nombre' está presente y no está vacío
             $requiredFields=['nombre'];

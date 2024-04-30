@@ -164,7 +164,8 @@ class PropiedadesController{
     
             // Validar que los campos requeridos no esten vacios.
             $requiredFields = ['domicilio', 'localidad_id',  'cantidad_huespedes', 'fecha_inicio_disponibilidad', 'cantidad_dias', 'disponible', 'valor_noche', 'moneda_id', 'tipo_propiedad_id'];
-            if (comprobarDatos_Informar($requireFields,$data)) {
+            $payload=faltanDatos($requiredFields,$data);
+            if (isset($payload)) {
                 return responseWrite($response,$payload);
             }
     
