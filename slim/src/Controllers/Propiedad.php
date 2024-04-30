@@ -15,16 +15,12 @@ class PropiedadesController{
         $data = $request->getParsedBody();
     
         // Validar campos requeridos
+
         $requiredFields = ['domicilio', 'localidad_id', 'cantidad_habitaciones', 'cantidad_banios', 'cochera', 'cantidad_huespedes', 'fecha_inicio_disponibilidad', 'cantidad_dias', 'disponible', 'valor_noche', 'moneda_id', 'tipo_propiedad_id', 'imagen', 'tipo_imagen'];
-        foreach ($requiredFields as $field) {
-            if (!isset($data[$field]) || empty($data[$field])) {
-                $status = 'Error'; 
-                $mensaje = "El campo $field es requerido"; 
-                $payload = codeResponseGeneric($status, $mensaje, 400);
-                return responseWrite($response, $payload);
-            }
+        $payload=faltanDatos($requiredFields,$data);
+        if (isset($payload)) {
+            return responseWrite($response,$payload);
         }
-    
         try {
             // Insertar la nueva propiedad en la base de datos
             $query = $connection->prepare("INSERT INTO propiedades (domicilio, localidad_id, cantidad_habitaciones, cantidad_banios, cochera, cantidad_huespedes, fecha_inicio_disponibilidad, cantidad_dias, disponible, valor_noche, moneda_id, tipo_propiedad_id, imagen, tipo_imagen) VALUES (:domicilio, :localidad_id, :cantidad_habitaciones, :cantidad_banios, :cochera, :cantidad_huespedes, :fecha_inicio_disponibilidad, :cantidad_dias, :disponible, :valor_noche, :moneda_id, :tipo_propiedad_id, :imagen, :tipo_imagen)");
@@ -69,46 +65,37 @@ class PropiedadesController{
     public function listar(Request $request, Response $response) {
         $connection = getConnection();
         $params = $request->getQueryParams(); //obtenemos los parámetros de consulta proporcionados en la URL
-    
         // Construir la consulta SQL base sin ningun filtro
         $sql = "SELECT * FROM propiedades";
-    
         // Aplicar filtros si se proporcionan
-        $conditions = [];
         $values = []; //aca guardamos los parametros si hay
-        if (isset($params['disponible'])) {
-            $conditions[] = "disponible = :disponible";
-            $values[':disponible'] = filter_var($params['disponible'], FILTER_VALIDATE_BOOLEAN);
-        }
-        if (isset($params['localidad_id'])) {
-            $conditions[] = "localidad_id = :localidad_id";
-            $values[':localidad_id'] = $params['localidad_id'];
-        }
-        if (isset($params['fecha_inicio_disponibilidad'])) {
-            $conditions[] = "fecha_inicio_disponibilidad = :fecha_inicio_disponibilidad";
-            $values[':fecha_inicio_disponibilidad'] = $params['fecha_inicio_disponibilidad'];
-        }
-        if (isset($params['cantidad_huespedes'])) {
-            $conditions[] = "cantidad_huespedes = :cantidad_huespedes";
-            $values[':cantidad_huespedes'] = $params['cantidad_huespedes'];
-        }
-    
-        // Combinar las condiciones
-        if (!empty($conditions)) {
+        if (!empty($params)){
+            $conditions = [];
+            $condiciones=['disponible','localidad_id','fecha_inicio_disponibilidad','cantidad_huespedes'];
+            foreach ($condiciones as $key) {
+                if (isset($params[$key])) {
+                    $conditions[] = "$key = :$key";
+                    $values[":$key"] = $params[$key];
+                }
+            }
+            // combinar Condiciones
             $sql .= " WHERE " . implode(" AND ", $conditions);
         }
-    
+       
         try {
             // Ejecutar la consulta
             $query = $connection->prepare($sql);
             $query->execute($values);
             $propiedades = $query->fetchAll(\PDO::FETCH_ASSOC);
-    
             // Respuesta exitosa con el listado de propiedades
-            $status = 'Success';
-            $mensaje = 'Listado de propiedades';
-            $payload = ['propiedades' => $propiedades];
-            $payload = codeResponseGeneric($mensaje, 200, $payload);
+            if ($propiedades){
+                $payload= codeResponseOk($propiedades);
+
+            } else {
+                $status = 'Error';
+                $mensaje = 'No se encontraron propiedades';
+                $payload = codeResponseGeneric($status,$mensaje,200);
+            }
             return responseWrite($response, $payload);
         } catch (\PDOException $e) {
             // Manejo de excepciones PDO
@@ -181,13 +168,8 @@ class PropiedadesController{
     
             // Validar que los campos requeridos no esten vacios.
             $requiredFields = ['domicilio', 'localidad_id',  'cantidad_huespedes', 'fecha_inicio_disponibilidad', 'cantidad_dias', 'disponible', 'valor_noche', 'moneda_id', 'tipo_propiedad_id'];
-            foreach ($requiredFields as $field) {
-                if (!isset($data[$field]) || empty($data[$field])) {
-                    $status = 'Error'; 
-                    $mensaje = "El campo $field es requerido"; 
-                    $payload = codeResponseGeneric($status, $mensaje, 400);
-                    return responseWrite($response, $payload);
-                }
+            if (comprobarDatos_Informar($requireFields,$data)) {
+                return responseWrite($response,$payload);
             }
     
             // Verificar si la propiedad ya existe en la base de datos. ¿Validio con domicilio?
@@ -224,7 +206,6 @@ class PropiedadesController{
     public function eliminarPropiedad(Request $request, Response $response, $args) {
         $connection = getConnection();
         $id_url = $args['id']; 
-    
         // Validar ID numérico
         if(!is_numeric($id_url)) {
             $status = 'Error'; 

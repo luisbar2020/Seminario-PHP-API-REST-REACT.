@@ -40,4 +40,19 @@ function responseWrite(Response $response , $payload) {
     $response -> getBody()->write($payload);
     return $response->withHeader('Content-Type', 'application/json');
 }
+
+function faltanDatos ($requiredFields,$data){
+    $camposFaltantes = []; // Array para almacenar campos faltantes
+    foreach ($requiredFields as $field) {
+        if (!isset($data[$field]) || empty(trim($data[$field]))) {
+            $camposFaltantes[] = $field; // Agrega el campo faltante al array
+        }
+    }
+    if (!empty($camposFaltantes)) {
+        $status = 'Error'; 
+        $mensaje = "Los siguientes campos son requeridos: " . implode(', ', $camposFaltantes); 
+        return $payload = codeResponseGeneric($status,$mensaje, 400);  
+    }
+   
+}
 ?>
