@@ -8,7 +8,15 @@ require_once __DIR__ . '/../../utilidades.php';
 
 
 class PropiedadesController{
-        
+    private function existeID ($id,$tabla){
+        $connection=getConnection();
+        $query=$connection->query("SELECT id FROM $tabla WHERE id=$id");
+        if($query->rowCount()>0) {
+            return true;
+        } else {
+            return false;
+        }
+    }   
     //POST
     public function crearPropiedad(Request $request, Response $response) {
         $connection = getConnection();
@@ -16,12 +24,28 @@ class PropiedadesController{
     
         // Validar campos requeridos
 
-        $requiredFields = ['domicilio', 'localidad_id',  'cantidad_huespedes', 'fecha_inicio_disponibilidad', 'cantidad_dias', 'disponible', 'valor_noche', 'moneda_id', 'tipo_propiedad_id'];
+        $requiredFields = ['domicilio', 'localidad_id',  'cantidad_huespedes', 'fecha_inicio_disponibilidad', 'cantidad_dias', 'disponible', 'valor_noche',  'tipo_propiedad_id'];
         $payload=faltanDatos($requiredFields,$data);
         if (isset($payload)) {
             return responseWrite($response,$payload);
         }
         try {
+            $campos = [
+                'localidad_id' => 'localidades',
+                'tipo_propiedad_id' => 'tipo_propiedades'
+            ];
+            $errores = [];
+            foreach ($campos as $campo => $tabla) {
+                if (!$this->existeID($data[$campo], $tabla)) {
+                    $errores[] = "No existe el ID $campo";
+                }
+            }
+            if (!empty($errores)) {
+                $status = 'Error';
+                $mensaje = implode(", ", $errores);
+                $payload = codeResponseGeneric($status, $mensaje, 400);
+                return responseWrite($response, $payload);
+            }
             // Insertar la nueva propiedad en la base de datos
             $query = $connection->prepare("INSERT INTO propiedades (domicilio, localidad_id, cantidad_habitaciones, cantidad_banios, cochera, cantidad_huespedes, fecha_inicio_disponibilidad, cantidad_dias, disponible, valor_noche, moneda_id, tipo_propiedad_id, imagen, tipo_imagen) VALUES (:domicilio, :localidad_id, :cantidad_habitaciones, :cantidad_banios, :cochera, :cantidad_huespedes, :fecha_inicio_disponibilidad, :cantidad_dias, :disponible, :valor_noche, :moneda_id, :tipo_propiedad_id, :imagen, :tipo_imagen)");
             $valores = [

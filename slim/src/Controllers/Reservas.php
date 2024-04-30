@@ -61,6 +61,9 @@ class ReservasController {
         if (isset($payload)) {
             return responseWrite($response,$payload);
         }
+
+        // aca compruebo que el inquilino este activo y la propiedad esté disponible
+
         if (!$this->inquilinoActivo($data['inquilino_id'], $mensaje)) {
             $payload = codeResponseGeneric("Error",$mensaje,400);
             return responseWrite($response, $payload);
@@ -71,8 +74,6 @@ class ReservasController {
         }
         $valor_por_noche = $this->obtenerValorPropiedadPorNoche($data['propiedad_id']);
         $valor_total = $valor_por_noche * $data['cantidad_noches'];
-        $aca='Error';
-        var_dump($aca);
         try {
             $sql = "INSERT INTO reservas (propiedad_id, inquilino_id, fecha_desde, cantidad_noches, valor_total) 
                     VALUES (:propiedad_id, :inquilino_id, :fecha_desde, :cantidad_noches, :valor_total)";
