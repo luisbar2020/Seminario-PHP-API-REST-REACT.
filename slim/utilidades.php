@@ -44,7 +44,7 @@ function responseWrite(Response $response , $payload) {
 function faltanDatos ($requiredFields,$data){
     $camposFaltantes = []; // Array para almacenar campos faltantes
     foreach ($requiredFields as $field) {
-        if (!isset($data[$field]) || empty(trim($data[$field]))) {
+        if (!isset($data[$field]) || empty(($data[$field]))) {
             $camposFaltantes[] = $field; // Agrega el campo faltante al array
         }
     }

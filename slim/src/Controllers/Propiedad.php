@@ -16,7 +16,7 @@ class PropiedadesController{
     
         // Validar campos requeridos
 
-        $requiredFields = ['domicilio', 'localidad_id', 'cantidad_habitaciones', 'cantidad_banios', 'cochera', 'cantidad_huespedes', 'fecha_inicio_disponibilidad', 'cantidad_dias', 'disponible', 'valor_noche', 'moneda_id', 'tipo_propiedad_id', 'imagen', 'tipo_imagen'];
+        $requiredFields = ['domicilio', 'localidad_id',  'cantidad_huespedes', 'fecha_inicio_disponibilidad', 'cantidad_dias', 'disponible', 'valor_noche', 'moneda_id', 'tipo_propiedad_id'];
         $payload=faltanDatos($requiredFields,$data);
         if (isset($payload)) {
             return responseWrite($response,$payload);
@@ -64,7 +64,7 @@ class PropiedadesController{
 
     public function listar(Request $request, Response $response) {
         $connection = getConnection();
-        $params = $request->getQueryParams(); //obtenemos los parámetros de consulta proporcionados en la URL
+        $params = $request->getQueryParams();
         // Construir la consulta SQL base sin ningun filtro
         $sql = "SELECT * FROM propiedades";
         // Aplicar filtros si se proporcionan
@@ -117,21 +117,17 @@ class PropiedadesController{
              $query = $connection->query("SELECT * FROM propiedades WHERE id=$id");
              // Obtiene los resultados de la consulta
              $tipos = $query->fetchAll(\PDO::FETCH_ASSOC);
-             // Preparamos la respuesta json 
              if($tipos) {
                  $payload = codeResponseOk($tipos);
-                // funcion que devulve y muestra la respuesta 
                 return responseWrite($response, $payload);
             } else {
                 $status='Error'; $mensaje='No se encontró ninguna propiead con el ID proporcionado.';
                 $payload = codeResponseGeneric($status,$mensaje,400);
-                // Devolver y mostrar la respuesta con el error
                 return responseWrite($response, $payload);
             }
          } catch (\PDOException $e) {
-                // En caso de error, prepara una respuesta de error JSON
                 $payload= codeRespondeBad();
-                // devolvemos y mostramos la respuesta con el error.
+                
                 return responseWrite($response,$payload);
          }
      
@@ -185,10 +181,40 @@ class PropiedadesController{
             }
     
             // Actualizar la propiedad
-            $query = $connection->prepare("UPDATE propiedades SET domicilio=:domicilio WHERE id=:id");
-            $query->bindParam(':domicilio', $data['domicilio'], \PDO::PARAM_STR);
+            $query = $connection->prepare("UPDATE propiedades SET
+             (domicilio=:domicilio,
+             localidad_id=:localidad_id,
+             cantidad_habitaciones=:cantidad_habitaciones,
+             cantidad_banios=:cantidad_banios,
+             cochera=:cochera,
+             cantidad_huespedes=:cantidad_huespedes,
+             fecha_incio_disponibilidad=:fecha_incio_disponibilidad,
+             cantidad_dias=:cantidad_dias,
+             disponible=:disponible,
+             valor_noche=:valor_noche,
+             moneda_id=:moneda_id,
+             tipo_propiedad_id=:tipo_propiedad_id,
+             imagen=:imagen,
+             tipo_imagen=:tipo_imagen 
+             WHERE id=:id");
             $query->bindParam(':id', $id_url, \PDO::PARAM_INT);
-            $query->execute();
+            $valores = [
+                ':domicilio' => $data['domicilio'],
+                ':localidad_id' => $data['localidad_id'],
+                ':cantidad_habitaciones' => $data['cantidad_habitaciones'],
+                ':cantidad_banios' => $data['cantidad_banios'],
+                ':cochera' => $data['cochera'],
+                ':cantidad_huespedes' => $data['cantidad_huespedes'],
+                ':fecha_inicio_disponibilidad' => $data['fecha_inicio_disponibilidad'],
+                ':cantidad_dias' => $data['cantidad_dias'],
+                ':disponible' => $data['disponible'],
+                ':valor_noche' => $data['valor_noche'],
+                ':moneda_id' => $data['moneda_id'],
+                ':tipo_propiedad_id' => $data['tipo_propiedad_id'],
+                ':imagen' => $data['imagen'],
+                ':tipo_imagen' => $data['tipo_imagen']
+            ];
+            $query->execute($valores);
     
             // Respuesta de éxito
             $status = 'Success';
