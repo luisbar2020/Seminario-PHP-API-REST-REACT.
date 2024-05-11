@@ -48,8 +48,8 @@ $app->delete('/tipos_propiedad/{id}',TipoPropiedadesController::class . ':elimin
 // Inquilinos
 $app->post('/inquilinos', InquilinosController::class . ':crearInquilino');
 $app->put ('/inquilinos/{id}', InquilinosController::class. ':editarInquilino');
-$app->get('/inquilinos/listar', InquilinosController::class. ':listar');
-$app->get('/inquilinos/listar/{id}', InquilinosController::class .':listarPorId');
+$app->get('/inquilinos', InquilinosController::class. ':listar');
+$app->get('/inquilinos/{id}', InquilinosController::class .':listarPorId');
 $app->get('/inquilinos/{id}/reservas', InquilinosController::class. ':reservaPorId');
 $app->delete('/inquilinos/{id}', InquilinosController::class. ':eliminarPorId');
 
