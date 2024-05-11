@@ -86,13 +86,16 @@ class TipoPropiedadesController {
             $query = $connection->prepare("SELECT id FROM tipo_propiedades WHERE nombre = :nombre LIMIT 1");
             $query->bindParam(':nombre', $nombre, \PDO::PARAM_STR);
             $query->execute(); 
-            $consulta= $query-> fetch(\PDO::FETCH_ASSOC);
-            $idQuery=$consulta['id'];
-            if($query->rowCount()>0 && $idQuery!=$id) {
+           
+            if($query->rowCount()>0) {
+                $consulta= $query-> fetch(\PDO::FETCH_ASSOC);
+                $idQuery=$consulta['id'];
+                if($idQuery!=$id){
                         $status = 'Error';
                         $mensaje = 'Ya existe un tipo de propiedad con el nuevo nombre';
                         $payload = codeResponseGeneric($status, $mensaje, 400);
                         return responseWrite($response, $payload);
+                }
             } else {
                         // Actualizar el nombre del tipo de propiedad en la base de datos
                         $query = $connection->prepare('UPDATE tipo_propiedades SET nombre = :nombre WHERE id = :id');

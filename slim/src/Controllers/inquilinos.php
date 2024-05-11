@@ -64,10 +64,16 @@ class InquilinosController {
                 return responseWrite($response,$payload);
             }  
             $documento=$datos['documento'];
-            $query=$connection->query("SELECT documento FROM inquilinos where documento=$documento");
+            $query=$connection->query("SELECT id FROM inquilinos where documento=$documento");
+            // Verifico que el documento encontrado no sea el del id que quiero editar 
+          
             if($query->rowCount()>0){
-                $status='Error'; $mensaje='El documento proporcionado ya se encuentra en uso'; $payload=codeResponseGeneric($status,$mensaje,400);
-                return responseWrite($response,$payload);
+                $consulta= $query-> fetch(\PDO::FETCH_ASSOC);
+                $idConsulta=$consulta['id'];
+                if($idConsulta!=$id_url){
+                    $status='Error'; $mensaje='El documento proporcionado ya se encuentra en uso'; $payload=codeResponseGeneric($status,$mensaje,400);
+                    return responseWrite($response,$payload);
+                }
             } 
             $query=$connection->prepare("UPDATE inquilinos SET
                       apellido= :apellido,
@@ -82,7 +88,8 @@ class InquilinosController {
                 ':nombre'=>$datos['nombre'],
                 ':documento'=>$datos['documento'],
                 ':email'=>$datos['email'],
-                ':activo'=>$datos['activo']
+                ':activo'=>$datos['activo'],
+                ':id'=>$id_url
             ];
             $query->execute($elementos);
             $status='SUCCESS'; $mensaje='Inquilino editado exitosamente'; 
@@ -208,7 +215,6 @@ class InquilinosController {
             $payload = codeResponseGeneric($status, $mensaje, 400);
             return responseWrite($response, $payload);
         }
-        var_dump($id_url); 
         try {    
              $connection = getConnection(); 
              // Realiza la consulta SQL
