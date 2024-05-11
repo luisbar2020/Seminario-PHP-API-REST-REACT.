@@ -132,7 +132,7 @@ class InquilinosController {
         try {  
             $connection = getConnection();
              // Realiza la consulta SQL
-             $query = $connection->query("SELECT * FROM inquilinos WHERE id=$id");
+             $query = $connection->query("SELECT * FROM inquilinos WHERE id=$id_url");
              // Obtiene los resultados de la consulta
              $tipos = $query->fetchAll(\PDO::FETCH_ASSOC);
              // Preparamos la respuesta json 
@@ -207,14 +207,14 @@ class InquilinosController {
             $mensaje = 'ID no válido'; 
             $payload = codeResponseGeneric($status, $mensaje, 400);
             return responseWrite($response, $payload);
-        } 
+        }
+        var_dump($id_url); 
         try {    
              $connection = getConnection(); 
              // Realiza la consulta SQL
-             $query = $connection->prepare("DELETE FROM inquilinos WHERE id = :id");
-             $query -> bindParam (':id', $id_url, \PDO::PARAM_INT);
+             $query = $connection->prepare('DELETE FROM inquilinos WHERE id=:id');
+             $query -> bindValue(':id', $id_url);
              $query-> execute();
-             
              // Preparamos la respuesta json 
              if($query->rowCount()>0) {
                 $status='Success'; $mensaje='INQUILINO BORRADO EXITOSAMENTE';

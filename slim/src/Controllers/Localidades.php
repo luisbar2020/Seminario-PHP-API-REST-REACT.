@@ -47,10 +47,12 @@ class LocalidadesController {
                 return responseWrite($response,$payload);
             } 
             $localidad=$data['nombre'];
-            $query = $connection->prepare("SELECT nombre FROM localidades WHERE nombre = :localidad");
-            $query->bindValue(':localidad', $localidad,);
-            $query->execute();
-            if($query->rowCount()>0){
+            $query = $connection->prepare("SELECT id FROM localidades WHERE nombre = :localidad");
+            $query->bindValue(':localidad', $localidad,); $query->execute();
+            $consulta= $query-> fetch(\PDO::FETCH_ASSOC);
+            // correccion.
+            $idConsulta= $consulta['id'];
+            if($query->rowCount()>0 && $idConsulta!=$id){
                     $status='Error'; $mensaje='La localidad ya se encuentra en la base de datos';
                     $payload=codeResponseGeneric($status,$mensaje,400);
                     return responseWrite($response,$payload);

@@ -13,7 +13,6 @@ class ReservasController {
         $query = $connection->prepare($sql);
         $query->execute([':id' => $propiedadId]);
         $result = $query->fetch();
-        var_dump($result['valor_noche']);
         return $result['valor_noche'];
     }
     private function inquilinoActivo($inquilinoId, &$mensaje) {
@@ -80,7 +79,6 @@ class ReservasController {
             return responseWrite($response,$payload);
         }
         $valor_total = $valor_por_noche * $data['cantidad_noches'];
-        var_dump($valor_total);
         try {
             $sql = "INSERT INTO reservas (propiedad_id, inquilino_id, fecha_desde, cantidad_noches, valor_total) 
                     VALUES (:propiedad_id, :inquilino_id, :fecha_desde, :cantidad_noches, :valor_total)";
