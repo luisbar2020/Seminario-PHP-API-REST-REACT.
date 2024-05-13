@@ -11,6 +11,7 @@ class LocalidadesController {
     // GET /localidades
     public function listar(Request $request,Response $response) {
         $connection= getConnection (); 
+        var_dump(15);
         try {
             $query=$connection->query('SELECT * FROM localidades'); 
             $datos= $query->fetchAll(\PDO::FETCH_ASSOC);
