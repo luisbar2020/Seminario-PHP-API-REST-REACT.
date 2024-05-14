@@ -112,13 +112,16 @@ class InquilinosController {
              $query = $connection->query('SELECT * FROM inquilinos');
              // Obtiene los resultados de la consulta
              $tipos = $query->fetchAll(\PDO::FETCH_ASSOC);
+             if(empty($tipos)){
+                $tipos="No se encontraron datos";
+             }
              // Preparamos la respuesta json 
              $payload = codeResponseOk($tipos);
              // funcion que devulve y muestra la respuesta 
              return responseWrite($response, $payload);
          } catch (\PDOException $e) {
                 // En caso de error, prepara una respuesta de error JSON
-                $payload= codeRespondeBad();
+                $payload= codeResponseBad();
                 // devolvemos y mostramos la respuesta con el error.
                 return responseWrite($response,$payload);
          }
@@ -155,7 +158,7 @@ class InquilinosController {
             }
          } catch (\PDOException $e) {
                 // En caso de error, prepara una respuesta de error JSON
-                $payload= codeRespondeBad();
+                $payload= codeResponseBad();
                 // devolvemos y mostramos la respuesta con el error.
                 return responseWrite($response,$payload);
          }

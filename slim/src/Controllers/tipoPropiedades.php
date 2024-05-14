@@ -18,12 +18,15 @@ class TipoPropiedadesController {
              // Obtiene los resultados de la consulta
              $tipos = $query->fetchAll(\PDO::FETCH_ASSOC);
              // Preparamos la respuesta json 
+             if(empty($tipos)){
+                $tipos="No se encontraron datos";
+             }
              $payload = codeResponseOk($tipos);
              // funcion que devulve y muestra la respuesta 
              return responseWrite($response,$payload);
          } catch (\PDOException $e) {
                 // En caso de error, prepara una respuesta de error JSON
-                $payload= codeRespondeBad();
+                $payload= codeResponseBad();
                 // devolvemos y mostramos la respuesta con el error.
                 return responseWrite($response,$payload);
          }
@@ -96,7 +99,7 @@ class TipoPropiedadesController {
                         $payload = codeResponseGeneric($status, $mensaje, 400);
                         return responseWrite($response, $payload);
                 }
-            } else {
+            } 
                         // Actualizar el nombre del tipo de propiedad en la base de datos
                         $query = $connection->prepare('UPDATE tipo_propiedades SET nombre = :nombre WHERE id = :id');
                         $elementos=[':nombre'=>$nombre,
@@ -106,7 +109,6 @@ class TipoPropiedadesController {
                         $mensaje = 'Nombre del tipo de propiedad actualizado exitosamente';
                         $payload = codeResponseGeneric($status, $mensaje, 200);
                         return responseWrite($response, $payload);
-            }
         } catch (\PDOException $e) {
             // Manejar excepciones de base de datos
             $payload = codeResponseBad();

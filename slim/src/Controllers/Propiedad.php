@@ -37,7 +37,7 @@ class PropiedadesController{
             $errores = [];
             foreach ($campos as $campo => $tabla) {
                 if (!$this->existeID($data[$campo], $tabla)) {
-                    $errores[] = "No existe el ID $campo";
+                    $errores[] = "No existe el ID $campo ";
                 }
             }
             if (!empty($errores)) {
@@ -47,32 +47,32 @@ class PropiedadesController{
                 return responseWrite($response, $payload);
             }
             // Insertar la nueva propiedad en la base de datos
-            $query = $connection->prepare("INSERT INTO propiedades (domicilio, localidad_id, cantidad_habitaciones, cantidad_banios, cochera, cantidad_huespedes, fecha_inicio_disponibilidad, cantidad_dias, disponible, valor_noche, moneda_id, tipo_propiedad_id, imagen, tipo_imagen) VALUES (:domicilio, :localidad_id, :cantidad_habitaciones, :cantidad_banios, :cochera, :cantidad_huespedes, :fecha_inicio_disponibilidad, :cantidad_dias, :disponible, :valor_noche, :moneda_id, :tipo_propiedad_id, :imagen, :tipo_imagen)");
+            $query = $connection->prepare("INSERT INTO propiedades (domicilio, localidad_id, cantidad_habitaciones, cantidad_banios, cochera, cantidad_huespedes, fecha_inicio_disponibilidad, cantidad_dias, disponible, valor_noche, tipo_propiedad_id, imagen, tipo_imagen) VALUES (:domicilio, :localidad_id, :cantidad_habitaciones, :cantidad_banios, :cochera, :cantidad_huespedes, :fecha_inicio_disponibilidad, :cantidad_dias, :disponible, :valor_noche, :tipo_propiedad_id, :imagen, :tipo_imagen)");
+    
             $valores = [
                 ':domicilio' => $data['domicilio'],
                 ':localidad_id' => $data['localidad_id'],
-                ':cantidad_habitaciones' => $data['cantidad_habitaciones'],
-                ':cantidad_banios' => $data['cantidad_banios'],
-                ':cochera' => $data['cochera'],
+                ':cantidad_habitaciones' => $data['cantidad_habitaciones'] ?? null,
+                ':cantidad_banios' => $data['cantidad_banios'] ?? null,
+                ':cochera' => $data['cochera'] ?? null,
                 ':cantidad_huespedes' => $data['cantidad_huespedes'],
                 ':fecha_inicio_disponibilidad' => $data['fecha_inicio_disponibilidad'],
                 ':cantidad_dias' => $data['cantidad_dias'],
                 ':disponible' => $data['disponible'],
                 ':valor_noche' => $data['valor_noche'],
-                ':moneda_id' => $data['moneda_id'],
                 ':tipo_propiedad_id' => $data['tipo_propiedad_id'],
-                ':imagen' => $data['imagen'],
-                ':tipo_imagen' => $data['tipo_imagen']
+                ':imagen' => $data['imagen'] ?? null,
+                ':tipo_imagen' => $data['tipo_imagen'] ?? null
             ];
+            
             $query->execute($valores);
             // Obtener el ID de la nueva propiedad insertada
             $id = $connection->lastInsertId();
     
-            // Respuesta de éxito
             $status = 'Success';
             $mensaje = 'Propiedad creada correctamente';
             $payload = ['id' => $id];
-            $payload = codeResponseGeneric($status, $mensaje, 201, $payload);
+            $payload = codeResponseGeneric($status, $mensaje, 201);
             return responseWrite($response, $payload);
         } catch (\PDOException $e) {
             // Manejo de excepciones PDO
@@ -112,14 +112,10 @@ class PropiedadesController{
             $query->execute($values);
             $propiedades = $query->fetchAll(\PDO::FETCH_ASSOC);
             // Respuesta exitosa con el listado de propiedades
-            if ($propiedades){
-                $payload= codeResponseOk($propiedades);
-
-            } else {
-                $status = 'Error';
-                $mensaje = 'No se encontraron propiedades';
-                $payload = codeResponseGeneric($status,$mensaje,200);
+            if(empty($propiedades)){
+                $propiedades="No se encuentran propiedades";
             }
+            $payload= codeResponseOk($propiedades);
             return responseWrite($response, $payload);
         } catch (\PDOException $e) {
             // Manejo de excepciones PDO
@@ -150,7 +146,7 @@ class PropiedadesController{
                 return responseWrite($response, $payload);
             }
          } catch (\PDOException $e) {
-                $payload= codeRespondeBad();
+                $payload= codeResponseBad();
                 
                 return responseWrite($response,$payload);
          }
@@ -208,41 +204,38 @@ class PropiedadesController{
                 return responseWrite($response, $payload);
             }
             // Actualizar la propiedad
-            $query = $connection->prepare("UPDATE propiedades SET
-             (domicilio=:domicilio,
+            $query = $connection->prepare('UPDATE propiedades SET
+             domicilio=:domicilio,
              localidad_id=:localidad_id,
              cantidad_habitaciones=:cantidad_habitaciones,
              cantidad_banios=:cantidad_banios,
              cochera=:cochera,
              cantidad_huespedes=:cantidad_huespedes,
-             fecha_incio_disponibilidad=:fecha_incio_disponibilidad,
+             fecha_inicio_disponibilidad=:fecha_inicio_disponibilidad,
              cantidad_dias=:cantidad_dias,
              disponible=:disponible,
              valor_noche=:valor_noche,
-             moneda_id=:moneda_id,
              tipo_propiedad_id=:tipo_propiedad_id,
              imagen=:imagen,
              tipo_imagen=:tipo_imagen 
-             WHERE id=:id");
-            $query->bindParam(':id', $id_url, \PDO::PARAM_INT);
+             WHERE id=:id');
             $valores = [
                 ':domicilio' => $data['domicilio'],
                 ':localidad_id' => $data['localidad_id'],
-                ':cantidad_habitaciones' => $data['cantidad_habitaciones'],
-                ':cantidad_banios' => $data['cantidad_banios'],
-                ':cochera' => $data['cochera'],
+                ':cantidad_habitaciones' => $data['cantidad_habitaciones'] ?? null,
+                ':cantidad_banios' => $data['cantidad_banios'] ?? null,
+                ':cochera' => $data['cochera'] ?? null,
                 ':cantidad_huespedes' => $data['cantidad_huespedes'],
                 ':fecha_inicio_disponibilidad' => $data['fecha_inicio_disponibilidad'],
                 ':cantidad_dias' => $data['cantidad_dias'],
                 ':disponible' => $data['disponible'],
                 ':valor_noche' => $data['valor_noche'],
-                ':moneda_id' => $data['moneda_id'],
                 ':tipo_propiedad_id' => $data['tipo_propiedad_id'],
-                ':imagen' => $data['imagen'],
-                ':tipo_imagen' => $data['tipo_imagen']
+                ':imagen' => $data['imagen'] ?? null,
+                ':tipo_imagen' => $data['tipo_imagen'] ?? null,
+                ':id' => $id_url
             ];
             $query->execute($valores);
-    
             // Respuesta de éxito
             $status = 'Success';
             $mensaje = 'Propiedad editada correctamente';

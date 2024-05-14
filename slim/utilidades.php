@@ -16,7 +16,7 @@ function codeResponseOk ($tipos) {
     return  json_encode([
         'status' => 'success',
         'code' => 200 ,
-        'datos:' => $tipos
+        'datos' => $tipos
     ]);
 }
 // funcion generica

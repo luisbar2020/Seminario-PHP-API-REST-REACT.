@@ -65,7 +65,7 @@ $app->get ('/propiedad', PropiedadesController::class . ':listar');
 $app->put ('/propiedad/{id}', PropiedadesController::class . ':editarPropiedad');
 $app->delete ('/propiedad/{id}', PropiedadesController::class . ':eliminarPropiedad');
 $app->post ('/propiedad', PropiedadesController::class . ':crearPropiedad');
-$app->get('/propiedad/listar/{id}', PropiedadesController::class .':listarPorId');
+$app->get('/propiedad/{id}', PropiedadesController::class .':listarPorId');
 
 
 // Reservas

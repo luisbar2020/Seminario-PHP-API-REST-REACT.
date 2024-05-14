@@ -21,11 +21,7 @@ class ReservasController {
         $query = $connection->prepare($sql);
         $query->execute([':id' => $inquilinoId]);
         $result = $query->fetch();
-        if (!$result) {
-            // Si no se encontró ningún resultado, el inquilino no existe
-            $mensaje="No existe ese inquilino";
-            return false;
-        } else if ($result['activo'] == 0) {
+         if ($result['activo'] == 0 || !$result) {
             $mensaje="El inquilino especificado no está activo";
             return false;
         } else {
@@ -91,11 +87,11 @@ class ReservasController {
             ];
             $query = $connection->prepare($sql);
             $query->execute($values);
-            $payload = codeResponseGeneric('Reserva creada correctamente.', 201, "Created");
-            return responseWrite($response, $payload, 201);
+            $payload = codeResponseGeneric("Success", "Reserva creada correctamente.", 201);
+            return responseWrite($response, $payload);
         } catch (\PDOException $e) {
-            $payload = codeResponseGeneric('Error al crear la reserva.', 500, "Internal Server Error");
-            return responseWrite($response, $payload, 500);
+            $payload = codeResponseGeneric('Error al crear la reserva.', "Internal Server Error", 500);
+            return responseWrite($response, $payload);
         }
     }
 
@@ -117,7 +113,7 @@ class ReservasController {
             return responseWrite($response, $payload);
         } catch (\PDOException $e) {
                 // En caso de error, prepara una respuesta de error JSON
-                $payload= codeRespondeBad();
+                $payload= codeResponseBad();
                 // devolvemos y mostramos la respuesta con el error.
                 return responseWrite($response,$payload);
         }
@@ -159,7 +155,7 @@ class ReservasController {
 
         }
         catch (\PDOException $e){
-             $payload= codeRespondeBad();
+             $payload= codeResponseBad();
              return responseWrite($response,$payload);
         }
     }
