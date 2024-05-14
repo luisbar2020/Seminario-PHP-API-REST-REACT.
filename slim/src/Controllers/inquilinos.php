@@ -196,9 +196,9 @@ class InquilinosController {
                 return responseWrite($response,$payload);
             } else {
                 $status='Error'; $mensaje='No se encontró ninguna reserva con el ID proporcionado.';
-                $payload = codeResponseGeneric($status,$mensaje,400);
+                $payload = codeResponseGeneric($status,$mensaje,404);
                 // Devolver y mostrar la respuesta con el error
-                return responseWrite($response,$payload);
+                return responseWrite($response,$payload)->withStatus(404);
             }
          } catch (\PDOException $e) {
                 // En caso de error, prepara una respuesta de error JSON
@@ -221,6 +221,12 @@ class InquilinosController {
         try {    
              $connection = getConnection(); 
              // Realiza la consulta SQL
+             $query=$connection->query("SELECT id FROM inquilinos WHERE id=$id_url");
+             if($query->rowCount()==0) {
+                $status='Error';$mensaje='No se encuentra el inquilino'; 
+                $payload=codeResponseGeneric($status,$mensaje,404);
+                return responseWrite($response,$payload)->withStatus(404);
+             }
              $query = $connection->prepare('DELETE FROM inquilinos WHERE id=:id');
              $query -> bindValue(':id', $id_url);
              $query-> execute();
@@ -230,17 +236,13 @@ class InquilinosController {
                  $payload = codeResponseGeneric($status,$mensaje,200);
                 // funcion que devulve y muestra la respuesta 
                 return responseWrite($response, $payload);
-            } else {
-                $status='Error'; $mensaje='No se encontró ninguna inquilino con el ID proporcionado.';
-                $payload = codeResponseGeneric($status,$mensaje,400);
-                // Devolver y mostrar la respuesta con el error
-                return responseWrite($response, $payload);
             }
-         } catch (\PDOException $e) {
+        } catch (\PDOException $e) {
                 // En caso de error, prepara una respuesta de error JSON
-                $payload= codeResponseBad();
-                // devolvemos y mostramos la respuesta con el error.
-                return responseWrite($response,$payload);
+                $status = 'Error';
+                $mensaje = 'No se pudo eliminar el inquilino';
+                $payload = codeResponseGeneric($status,$mensaje,409);
+                return responseWrite($response, $payload)->withStatus(409);
          }
      
     }

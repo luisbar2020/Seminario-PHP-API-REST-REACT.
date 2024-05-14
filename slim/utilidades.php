@@ -39,6 +39,7 @@ function codeResponseBad() {
 function responseWrite(Response $response , $payload) {
     $response -> getBody()->write($payload);
     return $response->withHeader('Content-Type', 'application/json');
+    ;
 }
 
 function faltanDatos ($requiredFields,$data){

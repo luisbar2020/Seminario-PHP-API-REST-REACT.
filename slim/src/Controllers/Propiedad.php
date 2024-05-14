@@ -284,8 +284,10 @@ class PropiedadesController{
             return responseWrite($response, $payload);
         } catch (\PDOException $e) {
             // Manejo de excepciones PDO
-            $payload = codeResponseBad();
-            return responseWrite($response, $payload);
+            $status = 'Error';
+            $mensaje = 'No se pudo eliminar la propiedad.';
+            $payload = codeResponseGeneric($status,$mensaje,409);
+            return responseWrite($response, $payload)->withStatus(409);            ;
         }
     }
     
