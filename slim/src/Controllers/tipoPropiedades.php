@@ -14,7 +14,7 @@ class TipoPropiedadesController {
         try {
             $connection = getConnection();
              // Realiza la consulta SQL
-             $query = $connection->query('SELECT nombre FROM tipo_propiedades');
+             $query = $connection->query('SELECT nombre,id FROM tipo_propiedades');
              // Obtiene los resultados de la consulta
              $tipos = $query->fetchAll(\PDO::FETCH_ASSOC);
              // Preparamos la respuesta json 

@@ -46,6 +46,16 @@ class PropiedadesController{
                 $payload = codeResponseGeneric($status, $mensaje, 400);
                 return responseWrite($response, $payload);
             }
+            if ($data['disponible'] === true) {
+                $data['disponible'] = 1;
+            } elseif ($data['disponible'] === false) {
+                $data['disponible'] = 0;
+            } 
+            if ($data['cochera'] === true) {
+                $data['cochera'] = 1;
+            } elseif ($data['cochera'] === false) {
+                $data['cochera'] = 0;
+            }// No necesitas hacer nada si ya es 0
             // Insertar la nueva propiedad en la base de datos
             $query = $connection->prepare("INSERT INTO propiedades (domicilio, localidad_id, cantidad_habitaciones, cantidad_banios, cochera, cantidad_huespedes, fecha_inicio_disponibilidad, cantidad_dias, disponible, valor_noche, tipo_propiedad_id, imagen, tipo_imagen) VALUES (:domicilio, :localidad_id, :cantidad_habitaciones, :cantidad_banios, :cochera, :cantidad_huespedes, :fecha_inicio_disponibilidad, :cantidad_dias, :disponible, :valor_noche, :tipo_propiedad_id, :imagen, :tipo_imagen)");
     
@@ -98,11 +108,16 @@ class PropiedadesController{
             $condiciones=['disponible','localidad_id','fecha_inicio_disponibilidad','cantidad_huespedes'];
             foreach ($condiciones as $key) {
                 if (isset($params[$key])) {
+                    if ($key === 'disponible') {
+                        // Convertir 'true' a 1 y 'false' a 0
+                        $params[$key] = ($params[$key] === 'true' || $params[$key] === true) ? 1 : 0;
+                    }
                     $conditions[] = "$key = :$key";
                     $values[":$key"] = $params[$key];
+                    
                 }
             }
-            // combinar Condiciones
+            
             $sql .= " WHERE " . implode(" AND ", $conditions);
         }
        
@@ -182,7 +197,7 @@ class PropiedadesController{
 
     
             // Validar que los campos requeridos no esten vacios.
-            $requiredFields = ['domicilio', 'localidad_id',  'cantidad_huespedes', 'fecha_inicio_disponibilidad', 'cantidad_dias', 'disponible', 'valor_noche',  'tipo_propiedad_id'];
+            $requiredFields = ['domicilio', 'localidad_id',  'cantidad_huespedes', 'fecha_inicio_disponibilidad','disponible', 'valor_noche',  'tipo_propiedad_id'];
             $payload=faltanDatos($requiredFields,$data);
             if (isset($payload)) {
                 return responseWrite($response,$payload);
@@ -197,12 +212,27 @@ class PropiedadesController{
                     $errores[] = "No existe el ID $campo";
                 }
             }
+            
             if (!empty($errores)) {
                 $status = 'Error';
                 $mensaje = implode(", ", $errores);
                 $payload = codeResponseGeneric($status, $mensaje, 400);
                 return responseWrite($response, $payload);
             }
+            // Suponiendo que recibes el valor de disponible en $data['disponible']
+
+            // Convertir 'true' a 1 y 'false' a 0
+            if ($data['disponible'] === true) {
+                $data['disponible'] = 1;
+            } elseif ($data['disponible'] === false) {
+                $data['disponible'] = 0;
+            } 
+            if ($data['cochera'] === true) {
+                $data['cochera'] = 1;
+            } elseif ($data['cochera'] === false) {
+                $data['cochera'] = 0;
+            }// No necesitas hacer nada si ya es 0
+
             // Actualizar la propiedad
             $query = $connection->prepare('UPDATE propiedades SET
              domicilio=:domicilio,
@@ -227,7 +257,7 @@ class PropiedadesController{
                 ':cochera' => $data['cochera'] ?? null,
                 ':cantidad_huespedes' => $data['cantidad_huespedes'],
                 ':fecha_inicio_disponibilidad' => $data['fecha_inicio_disponibilidad'],
-                ':cantidad_dias' => $data['cantidad_dias'],
+                ':cantidad_dias' => $data['cantidad_dias'] ?? null,
                 ':disponible' => $data['disponible'],
                 ':valor_noche' => $data['valor_noche'],
                 ':tipo_propiedad_id' => $data['tipo_propiedad_id'],

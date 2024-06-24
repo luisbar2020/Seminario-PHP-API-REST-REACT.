@@ -22,9 +22,9 @@ function codeResponseOk ($tipos) {
 // funcion generica
 function codeResponseGeneric ($status,$mensaje, $code) {
     return  json_encode([
-        'Status: '=> $status,
-        'mensaje: ' => $mensaje,
-        'code: ' => $code
+        'status'=> $status,
+        'mensaje' => $mensaje,
+        'code' => $code
     ]);
 }
 // function para enviar respuesta Error
